@@ -4,11 +4,11 @@ class MazeSearcher:
 
     def make_maze():
 
-        maze = Maze([], Cell(True, 0, 2))
+        maze = Maze([], Cell(True, 1, 1))
 
-        for x in range(0, 30):
+        for x in range(0, 11):
             maze.cell_list.append([])
-            for y in range(0, 30):
+            for y in range(0, 51):
                 maze.cell_list[x].append(Cell(True, x, y))
 
         # current cell is the head of the stack
@@ -23,9 +23,8 @@ class MazeSearcher:
 
     def explore_neighbours(maze):
 
-        visited_cells = []
+        visited_cells = [maze.current_cell]
 
-        visited_cells.append(maze.current_cell)
         possible_to_visit = Stack()
         possible_to_visit.push(maze.current_cell)
 
