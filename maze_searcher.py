@@ -1,83 +1,79 @@
 import random
 
-def make_maze():
+class MazeSearcher:
 
-    maze = Maze([], Cell(True, 0, 1))
+    def make_maze():
 
-    for x in range(0, 10):
-        maze.cell_list.append([])
-        for y in range(0, 10):
-            maze.cell_list[x].append(Cell(True, x, y))
+        maze = Maze([], Cell(True, 0, 2))
 
-    print(maze)
+        for x in range(0, 30):
+            maze.cell_list.append([])
+            for y in range(0, 30):
+                maze.cell_list[x].append(Cell(True, x, y))
 
-    visited_cells = []
+        # current cell is the head of the stack
+        # x is vertical( rows) , y is across( columns )....
 
-    possible_to_visit = Stack()
+        maze.current_cell.is_wall = False
 
-    # initial cell.... for now. Know if there are ones which are unvisited by comparing lengths...
-    # marked as visited
-    # current cell is the head of the stack
-    # x is vertical( rows) , y is across( columns )....
+        expanded_maze = MazeSearcher.explore_neighbours(maze)
 
-    # 1.
+        for i in range(len(expanded_maze.cell_list)):
+            print(*expanded_maze.cell_list[i])
 
-    visited_cells.append(maze.current_cell)
-    maze.current_cell.is_wall = False
+    def explore_neighbours(maze):
 
-   # 2.
+        visited_cells = []
 
-    for x in range(5):
+        visited_cells.append(maze.current_cell)
+        possible_to_visit = Stack()
+        possible_to_visit.push(maze.current_cell)
 
-        neighbours_list = []
+        while possible_to_visit.size() != 0:
+            neighbours_list = []
 
-        if maze.current_cell.x_cord + 2 < len(maze.cell_list):
+            if maze.current_cell.x_cord + 2 < len(maze.cell_list):
 
-            if maze.cell_list[maze.current_cell.x_cord + 2][maze.current_cell.y_cord] not in visited_cells:
+                if maze.cell_list[maze.current_cell.x_cord + 2][maze.current_cell.y_cord] not in visited_cells:
+                    neighbours_list.append(maze.cell_list[maze.current_cell.x_cord + 2][maze.current_cell.y_cord])
 
-                neighbours_list.append(maze.cell_list[maze.current_cell.x_cord + 2][maze.current_cell.y_cord])
+            if maze.current_cell.x_cord - 2 > 0:
 
-        if maze.current_cell.x_cord - 2 > 0:
+                if maze.cell_list[maze.current_cell.x_cord - 2][maze.current_cell.y_cord] not in visited_cells:
+                    neighbours_list.append(maze.cell_list[maze.current_cell.x_cord - 2][maze.current_cell.y_cord])
 
-            if maze.cell_list[maze.current_cell.x_cord - 2][maze.current_cell.y_cord] not in visited_cells:
+            if maze.current_cell.y_cord + 2 < len(maze.cell_list[0]):
 
-                neighbours_list.append(maze.cell_list[maze.current_cell.x_cord - 2][maze.current_cell.y_cord])
+                if maze.cell_list[maze.current_cell.x_cord][maze.current_cell.y_cord + 2] not in visited_cells:
+                    neighbours_list.append(maze.cell_list[maze.current_cell.x_cord][maze.current_cell.y_cord + 2])
 
-        if maze.current_cell.y_cord + 2 < len(maze.cell_list[0]):
+            if maze.current_cell.y_cord - 2 > 0:
 
-            if maze.cell_list[maze.current_cell.x_cord][maze.current_cell.y_cord + 2] not in visited_cells:
+                if maze.cell_list[maze.current_cell.x_cord][maze.current_cell.y_cord - 2] not in visited_cells:
+                    neighbours_list.append(maze.cell_list[maze.current_cell.x_cord][maze.current_cell.y_cord - 2])
 
-                neighbours_list.append(maze.cell_list[maze.current_cell.x_cord][maze.current_cell.y_cord + 2])
+            if len(neighbours_list) != 0:
 
-        if maze.current_cell.x_cord - 2 > 0:
+                random_chosen_cell = random.choice(neighbours_list)
+                possible_to_visit.push(maze.current_cell)
 
-            if maze.cell_list[maze.current_cell.x_cord][maze.current_cell.y_cord - 2] not in visited_cells:
+                # Remove wall in between by doing the average of them + making the one we go to not a wall
 
-                neighbours_list.append(maze.cell_list[maze.current_cell.x_cord][maze.current_cell.y_cord - 2])
+                maze.cell_list[int((maze.current_cell.x_cord + random_chosen_cell.x_cord) / 2)][
+                    int((maze.current_cell.y_cord + random_chosen_cell.y_cord) / 2)].is_wall = False
 
-        if len(neighbours_list) != 0:
+                random_chosen_cell.is_wall = False
 
-            random_chosen_cell = random.choice(neighbours_list)
-            possible_to_visit.push(maze.current_cell)
+                maze.current_cell = random_chosen_cell
+                visited_cells.append(maze.current_cell)
 
-            # Remove wall in between by doing the average of them + making the one we go to not a wall
+                neighbours_list.clear()
 
-            maze.cell_list[int(maze.current_cell.x_cord+random_chosen_cell.x_cord/2)][int(maze.current_cell.y_cord+random_chosen_cell.y_cord/2)-1].is_wall = False
+            else:
 
-            random_chosen_cell.is_wall = False
+                maze.current_cell = possible_to_visit.pop()
 
-            maze.current_cell = random_chosen_cell
-            visited_cells.append(maze.current_cell)
-
-            neighbours_list.clear()
-
-        else:
-
-            popped_cell = possible_to_visit.pop()
-            maze.current_cell = popped_cell
-
-    for i in range(len(maze.cell_list)):
-        print(*maze.cell_list[i])
+        return maze
 
 
 class Cell:
@@ -119,4 +115,4 @@ class Stack:
         return len(self.items)
 
 
-make_maze()
+MazeSearcher.make_maze()
