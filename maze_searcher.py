@@ -23,6 +23,7 @@ def make_maze():
     # 1.
 
     visited_cells.append(maze.current_cell)
+    maze.current_cell.is_wall = False
 
    # 2.
 
@@ -61,19 +62,22 @@ def make_maze():
 
             # Remove wall in between by doing the average of them + making the one we go to not a wall
 
-            maze.cell_list[int(maze.current_cell.x_cord+random_chosen_cell.x_cord/2)][int(maze.current_cell.y_cord+random_chosen_cell.y_cord/2)].is_wall = False
+            maze.cell_list[int(maze.current_cell.x_cord+random_chosen_cell.x_cord/2)][int(maze.current_cell.y_cord+random_chosen_cell.y_cord/2)-1].is_wall = False
 
             random_chosen_cell.is_wall = False
 
             maze.current_cell = random_chosen_cell
             visited_cells.append(maze.current_cell)
 
+            neighbours_list.clear()
+
         else:
 
             popped_cell = possible_to_visit.pop()
             maze.current_cell = popped_cell
 
-    print(maze)
+    for i in range(len(maze.cell_list)):
+        print(*maze.cell_list[i])
 
 
 class Cell:
@@ -101,9 +105,6 @@ class Maze:
 class Stack:
     def __init__(self):
         self.items = []
-
-    def is_empty(self):
-        return self.items == []
 
     def push(self, item):
         self.items.append(item)
